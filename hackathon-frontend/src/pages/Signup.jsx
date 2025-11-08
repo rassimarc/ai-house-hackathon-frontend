@@ -25,13 +25,11 @@ function Signup() {
     e.preventDefault();
     setError('');
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
-    // Validate password length
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
@@ -46,14 +44,10 @@ function Signup() {
         password: formData.password,
       });
 
-      // Store the token
       localStorage.setItem('token', response.data.token);
-      
-      // Store user data if needed
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      // Redirect to dashboard
-      navigate('/dashboard');
+      navigate('/household');
     } catch (err) {
       setError(err.response?.data?.message || 'Signup failed. Please try again.');
     } finally {
@@ -65,7 +59,7 @@ function Signup() {
     <div className="signup-container">
       <div className="signup-card">
         <h2 className="signup-title">Create Account</h2>
-        
+
         <form onSubmit={handleSubmit} className="signup-form">
           <div className="input-group">
             <label className="input-label">Name</label>
@@ -131,7 +125,18 @@ function Signup() {
         </form>
 
         <p className="signup-footer">
-          Already have an account? <a href="/login" className="signup-link">Login</a>
+          Already have an account?{' '}
+          <a href="/login" className="signup-link">Login</a>
+        </p>
+
+        <p className="signup-footer">
+          <button 
+            onClick={() => navigate('/household')} 
+            className="signup-link"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            Fill household preferences form
+          </button>
         </p>
       </div>
     </div>
