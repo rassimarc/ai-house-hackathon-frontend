@@ -115,10 +115,12 @@ function Signup() {
 
           {error && <div className="error-message">{error}</div>}
 
+          {/* Hidden Sign Up button */}
           <button 
             type="submit" 
             disabled={loading}
             className="signup-button"
+            style={{ display: 'none' }}
           >
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
@@ -129,13 +131,13 @@ function Signup() {
           <a href="/login" className="signup-link">Login</a>
         </p>
 
+        {/* "Next" button reusing signup-button style */}
         <p className="signup-footer">
           <button 
             onClick={() => navigate('/household')} 
-            className="signup-link"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            className="signup-button"
           >
-            Fill household preferences form
+            Next
           </button>
         </p>
       </div>
