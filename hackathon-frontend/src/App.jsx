@@ -4,6 +4,8 @@ import Login from './pages/Login.jsx';
 import Signup from './pages/Signup';
 import HouseholdForm from './pages/HouseHoldForm';
 // import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard';
+import MyHouse from './pages/MyHouse';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/household" element={<HouseholdForm />} />
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/house" element={<MyHouse />} />
       </Routes>
     </BrowserRouter>
   );
