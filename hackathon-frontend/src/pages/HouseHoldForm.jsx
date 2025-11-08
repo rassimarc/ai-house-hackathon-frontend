@@ -107,7 +107,7 @@ function HouseholdForm() {
 
           {/* Frequency */}
           <div className="input-group">
-            <label className="input-label">How often do you buy groceries?</label>
+            <label className="input-label">How often do you buy items/groceries?</label>
             <select
               name="frequency"
               value={formData.frequency}
