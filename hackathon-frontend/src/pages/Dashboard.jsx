@@ -245,6 +245,12 @@ function Dashboard() {
 						<h1 className="dashboard-logo">RoomMate</h1>
 						<div className="header-right">
 							<span className="user-name">Welcome, {user?.name}!</span>
+							<button
+								onClick={() => navigate("/house")}
+								className="my-house-btn"
+							>
+								My House
+							</button>
 							<button onClick={handleLogout} className="logout-btn">
 								Logout
 							</button>
@@ -334,6 +340,9 @@ function Dashboard() {
 					<h1 className="dashboard-logo">RoomMate</h1>
 					<div className="header-right">
 						<span className="user-name">Welcome, {user?.name}!</span>
+						<button onClick={() => navigate("/house")} className="my-house-btn">
+							My House
+						</button>
 						<button onClick={handleLogout} className="logout-btn">
 							Logout
 						</button>
@@ -472,6 +481,8 @@ function Dashboard() {
 										</div>
 									))
 								)}
+
+								{/* My House managed on a separate page. Use the header button to go there. */}
 							</div>
 						</div>
 					)}

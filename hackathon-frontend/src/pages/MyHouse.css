@@ -1,0 +1,114 @@
+.myhouse-container {
+	max-width: 900px;
+	margin: 40px auto;
+	padding: 0 20px;
+}
+
+.myhouse-header {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 20px;
+}
+
+.back-btn {
+	background: transparent;
+	border: none;
+	color: #007bff;
+	cursor: pointer;
+	font-size: 16px;
+}
+
+.house-card {
+	background: white;
+	border-radius: 12px;
+	padding: 20px;
+	box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+}
+
+.house-top {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+}
+
+.house-name {
+	margin: 0 0 6px 0;
+}
+
+.house-code {
+	color: #586777;
+}
+
+.house-actions {
+	display: flex;
+	gap: 8px;
+}
+
+.members-section {
+	margin-top: 18px;
+}
+
+.member-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px;
+	background: #f8f9fa;
+	border-radius: 8px;
+	margin-bottom: 8px;
+}
+
+.member-name {
+	font-weight: 600;
+}
+
+.member-sub {
+	color: #6c7b86;
+	font-size: 13px;
+}
+
+.no-house {
+	text-align: center;
+	padding: 40px;
+}
+
+.empty-message {
+	color: #999;
+}
+
+/* non-intrusive copy confirmation (bottom-right) */
+.copy-confirmation {
+	position: fixed;
+	bottom: 24px;
+	right: 24px;
+	background: rgba(15, 23, 42, 0.92);
+	color: #fff;
+	padding: 10px 14px;
+	border-radius: 8px;
+	box-shadow: 0 6px 18px rgba(15, 23, 42, 0.3);
+	z-index: 9999;
+	font-size: 14px;
+	opacity: 0;
+	animation: mh-fade 2s forwards;
+}
+
+@keyframes mh-fade {
+	0% {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	10% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	90% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+}

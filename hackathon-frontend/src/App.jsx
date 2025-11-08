@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import MyHouse from './pages/MyHouse';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/house" element={<MyHouse />} />
       </Routes>
     </BrowserRouter>
   );
