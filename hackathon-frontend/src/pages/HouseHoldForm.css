@@ -18,11 +18,16 @@
 
 .household-title {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
   color: #333;
 }
 
-.household-form .input-group {
+.household-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group {
   margin-bottom: 20px;
 }
 
@@ -42,8 +47,28 @@
   box-sizing: border-box;
 }
 
-.household-button {
-  width: 100%;
+.input-field:focus {
+  outline: none;
+  border-color: #28a745;
+}
+
+/* Checkbox styles */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Reuse signup button styling */
+.signup-button {
   padding: 12px;
   background-color: #28a745;
   color: white;
@@ -51,8 +76,9 @@
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.household-button:hover {
+.signup-button:hover {
   background-color: #218838;
 }

@@ -4,12 +4,12 @@ import './HouseholdForm.css';
 
 function HouseholdForm() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    groceryFrequency: 'weekly',
-    itemsBought: '',
-    quantities: '',
-    chores: '',
-    budgetSharing: '',
+    roommates: '',
+    commonItems: [],
+    otherItems: '',
+    frequency: 'weekly',
   });
 
   const handleChange = (e) => {
@@ -19,15 +19,39 @@ function HouseholdForm() {
     });
   };
 
+  const handleCheckboxChange = (e) => {
+    const { value, checked } = e.target;
+    let updatedItems = [...formData.commonItems];
+
+    if (checked) {
+      updatedItems.push(value);
+    } else {
+      updatedItems = updatedItems.filter((item) => item !== value);
+    }
+
+    setFormData({
+      ...formData,
+      commonItems: updatedItems,
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Save to localStorage or API
-    localStorage.setItem('householdData', JSON.stringify(formData));
-
+    console.log('Form Data:', formData);
     alert('Preferences saved!');
     navigate('/dashboard');
   };
+
+  const commonItemsList = [
+    'Toilet Paper',
+    'Dish Soap',
+    'Laundry Detergent',
+    'Trash Bags',
+    'Cooking Oil',
+    'Paper Towels',
+    'Hand Wash',
+    'Toothpaste',
+  ];
 
   return (
     <div className="household-container">
@@ -35,11 +59,58 @@ function HouseholdForm() {
         <h2 className="household-title">Household Preferences</h2>
 
         <form onSubmit={handleSubmit} className="household-form">
+          {/* Number of roommates */}
+          <div className="input-group">
+            <label className="input-label">How many people live in your household?</label>
+            <input
+              type="number"
+              name="roommates"
+              value={formData.roommates}
+              onChange={handleChange}
+              required
+              min="1"
+              className="input-field"
+              placeholder="Enter number of members"
+            />
+          </div>
+
+          {/* Common items */}
+          <div className="input-group">
+            <label className="input-label">Select common household items you usually need:</label>
+            <div className="checkbox-group">
+              {commonItemsList.map((item) => (
+                <label key={item} className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    value={item}
+                    checked={formData.commonItems.includes(item)}
+                    onChange={handleCheckboxChange}
+                  />
+                  {item}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Other items */}
+          <div className="input-group">
+            <label className="input-label">Any other items you regularly buy?</label>
+            <input
+              type="text"
+              name="otherItems"
+              value={formData.otherItems}
+              onChange={handleChange}
+              placeholder="e.g., snacks, cleaning spray..."
+              className="input-field"
+            />
+          </div>
+
+          {/* Frequency */}
           <div className="input-group">
             <label className="input-label">How often do you buy groceries?</label>
             <select
-              name="groceryFrequency"
-              value={formData.groceryFrequency}
+              name="frequency"
+              value={formData.frequency}
               onChange={handleChange}
               className="input-field"
             >
@@ -49,53 +120,10 @@ function HouseholdForm() {
             </select>
           </div>
 
-          <div className="input-group">
-            <label className="input-label">What items do you usually buy?</label>
-            <textarea
-              name="itemsBought"
-              value={formData.itemsBought}
-              onChange={handleChange}
-              placeholder="e.g., milk, eggs, cleaning supplies..."
-              className="input-field"
-            />
-          </div>
-
-          <div className="input-group">
-            <label className="input-label">How much of each item (on average)?</label>
-            <textarea
-              name="quantities"
-              value={formData.quantities}
-              onChange={handleChange}
-              placeholder="e.g., 2L milk, 1 dozen eggs, 1 bottle detergent..."
-              className="input-field"
-            />
-          </div>
-
-          <div className="input-group">
-            <label className="input-label">How do you prefer to split chores?</label>
-            <input
-              type="text"
-              name="chores"
-              value={formData.chores}
-              onChange={handleChange}
-              placeholder="e.g., rotate weekly, fixed roles..."
-              className="input-field"
-            />
-          </div>
-
-          <div className="input-group">
-            <label className="input-label">How do you prefer to split expenses?</label>
-            <input
-              type="text"
-              name="budgetSharing"
-              value={formData.budgetSharing}
-              onChange={handleChange}
-              placeholder="e.g., equally, based on usage..."
-              className="input-field"
-            />
-          </div>
-
-          <button type="submit" className="household-button">Save Preferences</button>
+          {/* Submit */}
+          <button type="submit" className="signup-button">
+            Submit
+          </button>
         </form>
       </div>
     </div>
