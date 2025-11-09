@@ -12,39 +12,32 @@ function Dashboard() {
 	const [newGroceryItem, setNewGroceryItem] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [house, setHouse] = useState(null);
-	const [newHouseName, setNewHouseName] = useState("");
-	const [creatingHouse, setCreatingHouse] = useState(false);
-	const [houseMode, setHouseMode] = useState("create"); // 'create' or 'join'
-	const [joinCode, setJoinCode] = useState("");
-	const [joiningHouse, setJoiningHouse] = useState(false);
-	const [joinError, setJoinError] = useState("");
+	// ...existing code...
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		// Check if user is logged in
-		const token = localStorage.getItem("token");
-		if (!token) {
-			navigate("/login");
-			return;
-		}
-
-		// Get user data
-		const userData = JSON.parse(localStorage.getItem("user"));
-		setUser(userData);
-
-		// Determine if user is already in a house (support `house` object or `houseId`)
-		if (userData) {
-			if (userData.house) {
-				setHouse(userData.house);
-			} else if (userData.houseId) {
-				setHouse({ id: userData.houseId, name: `House ${userData.houseId}` });
-			} else {
+		const checkUserAndHouse = async () => {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				navigate("/login");
+				return;
+			}
+			const userData = JSON.parse(localStorage.getItem("user"));
+			setUser(userData);
+			// Check with API if user is in a house
+			try {
+				const res = await api.get(`/household/my?email=${userData.email}`);
+				if (res.data.house) {
+					setHouse(res.data.house);
+				} else {
+					setHouse(null);
+				}
+			} catch {
 				setHouse(null);
 			}
-		}
-
-		// Fetch chores and grocery list
-		fetchData();
+			fetchData();
+		};
+		checkUserAndHouse();
 	}, [navigate]);
 
 	const fetchData = async () => {
@@ -78,75 +71,7 @@ function Dashboard() {
 		navigate("/login");
 	};
 
-	// Create a mock house and associate it with the user (no backend yet)
-	const createHouse = (e) => {
-		e.preventDefault();
-		if (!newHouseName.trim()) return;
-		setCreatingHouse(true);
-
-		// create mock house with invite code
-		const inviteCode = Math.random().toString(36).slice(2, 8).toUpperCase();
-		const newHouse = {
-			id: Date.now(),
-			name: newHouseName,
-			members: [user?.id],
-			inviteCode,
-		};
-
-		// persist the house in localStorage under a 'houses' map so others can join by code
-		const houses = JSON.parse(localStorage.getItem("houses") || "{}");
-		houses[inviteCode] = newHouse;
-		localStorage.setItem("houses", JSON.stringify(houses));
-
-		// Update local state and persist to localStorage so refresh keeps the house
-		setHouse(newHouse);
-		const updatedUser = { ...user, house: newHouse };
-		localStorage.setItem("user", JSON.stringify(updatedUser));
-		setUser(updatedUser);
-		setNewHouseName("");
-		setCreatingHouse(false);
-
-		// Load mock data for the house
-		fetchData();
-	};
-
-	const joinHouse = (e) => {
-		e.preventDefault();
-		setJoinError("");
-		if (!joinCode.trim()) {
-			setJoinError("Please enter an invite code.");
-			return;
-		}
-		setJoiningHouse(true);
-
-		const code = joinCode.trim().toUpperCase();
-		const houses = JSON.parse(localStorage.getItem("houses") || "{}");
-		const found = houses[code];
-		if (!found) {
-			setJoinError("Invalid invite code.");
-			setJoiningHouse(false);
-			return;
-		}
-
-		// Add user to house members (mock)
-		if (!found.members) found.members = [];
-		if (user && !found.members.includes(user.id)) found.members.push(user.id);
-
-		// persist updated house
-		houses[code] = found;
-		localStorage.setItem("houses", JSON.stringify(houses));
-
-		// attach house to user and persist
-		const updatedUser = { ...user, house: found };
-		localStorage.setItem("user", JSON.stringify(updatedUser));
-		setUser(updatedUser);
-		setHouse(found);
-		setJoinCode("");
-		setJoiningHouse(false);
-
-		// load mock data
-		fetchData();
-	};
+	// ...existing code...
 
 	// Chore functions
 	const addChore = async (e) => {
@@ -235,102 +160,11 @@ function Dashboard() {
 		);
 	}
 
-	// If the user is not in a house yet, show the create-house option
-	if (!house) {
-		return (
-			<div className="dashboard-container">
-				{/* Header */}
-				<header className="dashboard-header">
-					<div className="header-content">
-						<h1 className="dashboard-logo">RoomMate</h1>
-						<div className="header-right">
-							<span className="user-name">Welcome, {user?.name}!</span>
-							<button
-								onClick={() => navigate("/house")}
-								className="my-house-btn"
-							>
-								My House
-							</button>
-							<button onClick={handleLogout} className="logout-btn">
-								Logout
-							</button>
-						</div>
-					</div>
-				</header>
-
-				<main className="dashboard-main">
-					<div className="dashboard-content">
-						<div className="create-house-card">
-							<div className="mode-switch">
-								<button
-									className={houseMode === "create" ? "active" : ""}
-									onClick={() => setHouseMode("create")}
-								>
-									Create
-								</button>
-								<button
-									className={houseMode === "join" ? "active" : ""}
-									onClick={() => setHouseMode("join")}
-								>
-									Join
-								</button>
-							</div>
-
-							{houseMode === "create" ? (
-								<>
-									<h2>Create a House</h2>
-									<p>
-										You're not in a house yet. Create one to start sharing
-										chores and groceries with your roommates.
-									</p>
-									<form onSubmit={createHouse} className="create-house-form">
-										<input
-											type="text"
-											value={newHouseName}
-											onChange={(e) => setNewHouseName(e.target.value)}
-											placeholder="House name"
-											className="add-item-input"
-										/>
-										<button
-											type="submit"
-											className="add-item-btn"
-											disabled={creatingHouse}
-										>
-											{creatingHouse ? "Creating..." : "Create House"}
-										</button>
-									</form>
-								</>
-							) : (
-								<>
-									<h2>Join a House</h2>
-									<p>Have an invite code? Enter it below to join your house.</p>
-									<form onSubmit={joinHouse} className="create-house-form">
-										<input
-											type="text"
-											value={joinCode}
-											onChange={(e) => setJoinCode(e.target.value)}
-											placeholder="Invite code"
-											className="add-item-input"
-										/>
-										{joinError && (
-											<div className="error-message">{joinError}</div>
-										)}
-										<button
-											type="submit"
-											className="add-item-btn"
-											disabled={joiningHouse}
-										>
-											{joiningHouse ? "Joining..." : "Join House"}
-										</button>
-									</form>
-								</>
-							)}
-						</div>
-					</div>
-				</main>
-			</div>
-		);
-	}
+	// If the user is not in a house yet, redirect to join/create team page
+	// if (!user || !house || (!house.id && !house.name)) {
+	// 	navigate("/join-create-team");
+	// 	return null;
+	// }
 
 	return (
 		<div className="dashboard-container">

@@ -32,10 +32,7 @@ function Login() {
 				return;
 			}
 
-			const response = await api.post("/auth/login", {
-				email,
-				password,
-			});
+			const response = await api.get(`/auth/login?email=${email}&password=${password}`);
 
 			// Store the token
 			localStorage.setItem("token", response.data.token);
@@ -44,7 +41,12 @@ function Login() {
 			localStorage.setItem("user", JSON.stringify(response.data.user));
 
 			// Redirect to dashboard
-			navigate("/dashboard");
+			const userHouse = await api.get(`/household/my?email=${response.data.user.email}`);
+			if (userHouse.data.in_household) {
+				navigate("/dashboard");
+			} else {
+				navigate("/join-create-team");
+			}
 		} catch (err) {
 			setError(
 				err.response?.data?.message || "Login failed. Please try again."
