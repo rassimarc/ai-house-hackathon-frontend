@@ -52,6 +52,7 @@ function JoinCreateTeam({ user, setUser, setHouse, fetchData }) {
 		}
 		setJoiningHouse(true);
 		try {
+            alert(user)
 			const response = await api.post(
 				`/household/join?code=${encodeURIComponent(
 					joinCode.trim()
@@ -77,7 +78,7 @@ function JoinCreateTeam({ user, setUser, setHouse, fetchData }) {
 		<div className="dashboard-container">
 			<header className="dashboard-header">
 				<div className="header-content">
-					<h1 className="dashboard-logo">RoomMate</h1>
+					<h1 className="dashboard-logo">CoHive</h1>
 				</div>
 			</header>
 			<main className="dashboard-main">

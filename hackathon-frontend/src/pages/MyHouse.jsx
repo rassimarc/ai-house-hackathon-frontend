@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 import "./MyHouse.css";
 
 function MyHouse() {
-	const [user, setUser] = useState(null);
 	const [house, setHouse] = useState(null);
-	// members list is derived from house and optional users store
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
 
@@ -16,110 +15,55 @@ function MyHouse() {
 			return;
 		}
 
-		const userData = JSON.parse(localStorage.getItem("user"));
-		setUser(userData);
-
-		// If user has house attached, load it from stored houses map or from user.house
-		const houses = JSON.parse(localStorage.getItem("houses") || "{}");
-		let h = null;
-		if (userData?.house?.inviteCode) {
-			h = houses[userData.house.inviteCode] || userData.house;
-		} else if (userData?.houseId) {
-			// attempt to find by id
-			h =
-				Object.values(houses).find((hh) => hh.id === userData.houseId) || null;
-		} else if (userData?.house) {
-			h = userData.house;
-		}
-
-		setHouse(h);
-
-		// members info will be derived at render time from the optional `users` store
-
-		setLoading(false);
+		// Fetch household/my from API
+		api
+			.get(
+				"household/my?email=" + JSON.parse(localStorage.getItem("user")).email
+			)
+			.then((res) => {
+				if (res.data.in_household) {
+					setHouse(res.data.household);
+				} else {
+					setHouse(null);
+				}
+				setLoading(false);
+			})
+			.catch(() => {
+				setHouse(null);
+				setLoading(false);
+			});
 	}, [navigate]);
 
 	const goBack = () => navigate("/dashboard");
 
 	const copyInvite = async () => {
-		if (!house?.inviteCode) return;
+		if (!house?.invite_code) return;
 		try {
-			await navigator.clipboard.writeText(house.inviteCode);
-			// alert(`Invite code copied: ${house.inviteCode}`);
-            // Small non-intrusive confirmation on the bottom right
-            const confirmation = document.createElement("div");
-            confirmation.className = "copy-confirmation";
-            confirmation.innerText = "Invite code copied to clipboard!";
-            document.body.appendChild(confirmation);
-            setTimeout(() => {
-                document.body.removeChild(confirmation);
-            }, 2000);
+			await navigator.clipboard.writeText(house.invite_code);
+			const confirmation = document.createElement("div");
+			confirmation.className = "copy-confirmation";
+			confirmation.innerText = "Invite code copied to clipboard!";
+			document.body.appendChild(confirmation);
+			setTimeout(() => {
+				document.body.removeChild(confirmation);
+			}, 2000);
 		} catch (e) {
 			console.error(e);
-			window.prompt("Copy invite code:", house.inviteCode);
+			window.prompt("Copy invite code:", house.invite_code);
 		}
 	};
 
-	const regenerateInvite = () => {
-		if (!house) return;
-		const houses = JSON.parse(localStorage.getItem("houses") || "{}");
-		const oldCode = house.inviteCode;
-		const newCode = Math.random().toString(36).slice(2, 8).toUpperCase();
+	// Regenerate invite code would require an API call in a real app
 
-		const newHouse = { ...house, inviteCode: newCode };
-		// remove old and add new
-		if (oldCode && houses[oldCode]) delete houses[oldCode];
-		houses[newCode] = newHouse;
-		localStorage.setItem("houses", JSON.stringify(houses));
-
-		// Update user stored house if present
-		const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-		if (storedUser) {
-			storedUser.house = newHouse;
-			localStorage.setItem("user", JSON.stringify(storedUser));
-			setUser(storedUser);
-		}
-
-		setHouse(newHouse);
-		// alert(`New invite code: ${newCode}`);
-	};
-
+	// Leave house would require an API call in a real app
 	const leaveHouse = () => {
-		if (!house || !user) return;
-		if (!window.confirm("Leave house?")) return;
-
-		const houses = JSON.parse(localStorage.getItem("houses") || "{}");
-		if (house.inviteCode && houses[house.inviteCode]) {
-			const h = houses[house.inviteCode];
-			h.members = (h.members || []).filter((id) => id !== user.id);
-			houses[house.inviteCode] = h;
-			localStorage.setItem("houses", JSON.stringify(houses));
-		}
-
-		const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-		if (storedUser) {
-			delete storedUser.house;
-			localStorage.setItem("user", JSON.stringify(storedUser));
-			setUser(storedUser);
-		}
-
-		setHouse(null);
-		// redirect back to dashboard
-		navigate("/");
+		alert("Leave house feature not implemented.");
 	};
 
-	const removeMember = (memberId) => {
-		if (!house) return;
-		if (!window.confirm(`Remove member ${memberId}?`)) return;
-		const houses = JSON.parse(localStorage.getItem("houses") || "{}");
-		if (house.inviteCode && houses[house.inviteCode]) {
-			const h = houses[house.inviteCode];
-			h.members = (h.members || []).filter((id) => id !== memberId);
-			houses[house.inviteCode] = h;
-			localStorage.setItem("houses", JSON.stringify(houses));
-			setHouse(h);
-		}
-	};
+	// Remove member would require an API call in a real app
+	// const removeMember = (memberId) => {
+	//     alert("Remove member feature not implemented.");
+	// };
 
 	if (loading) return <div className="myhouse-container">Loading...</div>;
 
@@ -145,15 +89,12 @@ function MyHouse() {
 						<div>
 							<h2 className="house-name">{house.name}</h2>
 							<div className="house-code">
-								Invite code: <strong>{house.inviteCode}</strong>
+								Invite code: <strong>{house.invite_code}</strong>
 							</div>
 						</div>
 						<div className="house-actions">
 							<button className="add-item-btn" onClick={copyInvite}>
 								Copy
-							</button>
-							<button className="add-item-btn" onClick={regenerateInvite}>
-								Regenerate
 							</button>
 							<button className="logout-btn" onClick={leaveHouse}>
 								Leave
@@ -163,39 +104,31 @@ function MyHouse() {
 
 					<section className="members-section">
 						<h3>Members</h3>
-						{!house.members || house.members.length === 0 ? (
+						{!house.users || house.users.length === 0 ? (
 							<p className="empty-message">No members yet.</p>
 						) : (
 							<div className="members-list">
-								{house.members.map((mid) => {
-									const users = JSON.parse(
-										localStorage.getItem("users") || "{}"
-									);
-									const info = users[mid] || null;
-									return (
-										<div className="member-item" key={mid}>
-											<div>
-												<div className="member-name">
-													{info?.name || info?.email || mid}
-												</div>
-												<div className="member-sub">
-													{info ? info.email : "ID: " + mid}
-												</div>
-											</div>
-											<div>
-												{mid !== user?.id && (
-													<button
-														className="delete-btn"
-														onClick={() => removeMember(mid)}
-													>
-														Remove
-													</button>
-												)}
-											</div>
+								{house.users.map((userEmail) => (
+									<div className="member-item" key={userEmail}>
+										<div>
+											<div className="member-name">{userEmail}</div>
 										</div>
-									);
-								})}
+									</div>
+								))}
 							</div>
+						)}
+					</section>
+
+					<section className="items-section">
+						<h3>Common Items</h3>
+						{!house.common_items || house.common_items.length === 0 ? (
+							<p className="empty-message">No common items yet.</p>
+						) : (
+							<ul className="items-list">
+								{house.common_items.map((item) => (
+									<li key={item}>{item}</li>
+								))}
+							</ul>
 						)}
 					</section>
 				</div>
