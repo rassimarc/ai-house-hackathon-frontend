@@ -8,63 +8,66 @@ function Dashboard() {
 	const [user, setUser] = useState(null);
 	const [activeTab, setActiveTab] = useState("chores"); // 'chores' or 'groceries'
 	const [chores, setChores] = useState([]);
-	const [groceryList, setGroceryList] = useState([]);
+	const [cartItems, setCartItems] = useState([]); // {name, quantity}
 	const [newChore, setNewChore] = useState("");
-	const [newGroceryItem, setNewGroceryItem] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [house, setHouse] = useState(null);
 	// ...existing code...
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const checkUserAndHouse = async () => {
+		const load = async () => {
 			const token = localStorage.getItem("token");
 			if (!token) {
 				navigate("/login");
 				return;
 			}
+
 			const userData = JSON.parse(localStorage.getItem("user"));
 			setUser(userData);
-			// Check with API if user is in a house
+
 			try {
-				const res = await api.get(`/household/my?email=${userData.email}`);
-				if (res.data.house) {
-					setHouse(res.data.house);
+				// 1) Find the user's household
+				const res = await api.get(`/household/my`, {
+					params: { email: userData.email },
+				});
+				if (res.data.in_household) {
+					const h = res.data.in_household;
+					setHouse(h);
+
+					// 2) Get the shared grocery cart for this household
+
+					const cartRes = await api.get(
+						`/shopping-cart?invite_code=${res.data.household.invite_code}&email=${userData.email}`,
+						{}
+					);
+
+					// cartRes.data.items is [{name, quantity}]
+					let items = cartRes.data?.items || [];
+					// Add Toilet Paper if not present
+					// if (!items.some(item => item.name && item.name.toLowerCase() === "toilet paper")) {
+					// 	items = [...items, { name: "Toilet Paper", quantity: 1 }];
+					// }
+					setCartItems(items);
 				} else {
 					setHouse(null);
 				}
-			} catch {
+			} catch (e) {
+				console.error(e);
 				setHouse(null);
 			}
-			fetchData();
-		};
-		checkUserAndHouse();
-	}, [navigate]);
 
-	const fetchData = async () => {
-		try {
-			// Mock chores data
-			const mockChores = [
+			setChores([
 				{ id: 1, title: "Clean the kitchen", completed: false },
 				{ id: 2, title: "Take out trash", completed: true },
 				{ id: 3, title: "Vacuum living room", completed: false },
-			];
+			]);
 
-			// Mock grocery data
-			const mockGroceries = [
-				{ id: 1, item: "Milk", purchased: false },
-				{ id: 2, item: "Bread", purchased: true },
-				{ id: 3, item: "Eggs", purchased: false },
-			];
+			setLoading(false);
+		};
 
-			setChores(mockChores);
-			setGroceryList(mockGroceries);
-			setLoading(false);
-		} catch (error) {
-			console.error("Error fetching data:", error);
-			setLoading(false);
-		}
-	};
+		load();
+	}, [navigate]);
 
 	const handleLogout = () => {
 		localStorage.removeItem("token");
@@ -110,46 +113,6 @@ function Dashboard() {
 			setChores(chores.filter((c) => c.id !== choreId));
 		} catch (error) {
 			console.error("Error deleting chore:", error);
-		}
-	};
-
-	// Grocery functions
-	const addGroceryItem = async (e) => {
-		e.preventDefault();
-		if (!newGroceryItem.trim()) return;
-
-		try {
-			const response = await api.post("/groceries", {
-				item: newGroceryItem,
-				purchased: false,
-			});
-			setGroceryList([...groceryList, response.data]);
-			setNewGroceryItem("");
-		} catch (error) {
-			console.error("Error adding grocery item:", error);
-		}
-	};
-
-	const toggleGroceryItem = async (itemId) => {
-		try {
-			const item = groceryList.find((i) => i.id === itemId);
-			const response = await api.patch(`/groceries/${itemId}`, {
-				purchased: !item.purchased,
-			});
-			setGroceryList(
-				groceryList.map((i) => (i.id === itemId ? response.data : i))
-			);
-		} catch (error) {
-			console.error("Error updating grocery item:", error);
-		}
-	};
-
-	const deleteGroceryItem = async (itemId) => {
-		try {
-			await api.delete(`/groceries/${itemId}`);
-			setGroceryList(groceryList.filter((i) => i.id !== itemId));
-		} catch (error) {
-			console.error("Error deleting grocery item:", error);
 		}
 	};
 
@@ -200,7 +163,7 @@ function Dashboard() {
 							className={`tab ${activeTab === "groceries" ? "active" : ""}`}
 							onClick={() => setActiveTab("groceries")}
 						>
-							🛒 Grocery List
+							🛒 Shopping Cart
 						</button>
 					</div>
 
@@ -266,58 +229,30 @@ function Dashboard() {
 					{activeTab === "groceries" && (
 						<div className="tab-content">
 							<div className="section-header">
-								<h2>Shared Grocery List</h2>
+								<h2>Shared Grocery Cart</h2>
 							</div>
 
-							{/* Add Grocery Item Form */}
-							<form onSubmit={addGroceryItem} className="add-item-form">
-								<input
-									type="text"
-									value={newGroceryItem}
-									onChange={(e) => setNewGroceryItem(e.target.value)}
-									placeholder="Add a grocery item..."
-									className="add-item-input"
-								/>
-								<button type="submit" className="add-item-btn">
-									Add
-								</button>
-							</form>
-
-							{/* Grocery List */}
+							{/* No add form; data comes from backend */}
 							<div className="items-list">
-								{groceryList.length === 0 ? (
+								{cartItems.length === 0 ? (
 									<p className="empty-message">
-										No items yet. Add groceries you need!
+										Your shared grocery cart is empty.
 									</p>
 								) : (
-									groceryList.map((item) => (
-										<div key={item.id} className="item-card">
+									cartItems.map((it, idx) => (
+										<div key={idx} className="item-card">
 											<div className="item-left">
-												<input
-													type="checkbox"
-													checked={item.purchased}
-													onChange={() => toggleGroceryItem(item.id)}
-													className="item-checkbox"
-												/>
-												<span
-													className={`item-text ${
-														item.purchased ? "completed" : ""
-													}`}
-												>
-													{item.item}
+												<span className="item-text">
+													{it.name}
+													{typeof it.quantity === "number"
+														? ` — x${it.quantity}`
+														: ""}
 												</span>
 											</div>
-											<button
-												onClick={() => deleteGroceryItem(item.id)}
-												className="delete-btn"
-											>
-												✕
-											</button>
+											{/* No delete/toggle buttons for now */}
 										</div>
 									))
 								)}
-
-								{/* My House managed on a separate page. Use the header button to go there. */}
 							</div>
 						</div>
 					)}
@@ -329,4 +264,192 @@ function Dashboard() {
 	);
 }
 
-export default Dashboard;
+// Simple Assistant-User Chat with Button Responses
+
+// Floating Assistant Chat (bottom right)
+function AssistantButtonChat() {
+	const chatSteps = [
+		{
+			assistant: "Toilet paper is running low. What would you like to do?",
+			options: [
+				{ label: "Add to groceries", next: 1 },
+				{ label: "False alarm", next: 2 },
+			],
+		},
+		{
+			assistant:
+				"Just added toilet paper to the grocery list. would you like to see your groceries?",
+			options: [
+				{ label: "See groceries", next: 2 },
+				{ label: "No, thanks", next: 3 },
+			],
+		},
+		{
+			assistant: "Here is your grocery list. Anything else?",
+			options: [
+				{ label: "See chores", next: 1 },
+				{ label: "Nothing, thanks", next: 3 },
+			],
+		},
+		{
+			assistant: "Okay! Have a great day!",
+			options: [],
+		},
+	];
+
+	const [step, setStep] = useState(0);
+	const [history, setHistory] = useState([]); // {assistant, user}
+	const [open, setOpen] = useState(false);
+
+	const handleOption = (option) => {
+		setHistory([
+			...history,
+			{ assistant: chatSteps[step].assistant, user: option.label },
+		]);
+		setStep(option.next);
+	};
+
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
+
+	return (
+		<>
+			{/* Floating chat button */}
+			{!open && (
+				<button
+					onClick={handleOpen}
+					style={{
+						position: "fixed",
+						bottom: 32,
+						right: 32,
+						zIndex: 1000,
+						background: "#4f46e5",
+						color: "white",
+						border: "none",
+						borderRadius: "50%",
+						width: 56,
+						height: 56,
+						fontSize: 28,
+						boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+						cursor: "pointer",
+					}}
+					aria-label="Open Assistant Chat"
+				>
+					💬
+				</button>
+			)}
+			{/* Floating chat window */}
+			{open && (
+				<div
+					style={{
+						position: "fixed",
+						bottom: 32,
+						right: 32,
+						zIndex: 1001,
+						background: "white",
+						border: "1px solid #e5e7eb",
+						borderRadius: 12,
+						boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+						width: 340,
+						maxWidth: "90vw",
+						padding: 0,
+						display: "flex",
+						flexDirection: "column",
+					}}
+				>
+					<div
+						style={{
+							background: "#4f46e5",
+							color: "white",
+							padding: "12px 16px",
+							borderTopLeftRadius: 12,
+							borderTopRightRadius: 12,
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-between",
+						}}
+					>
+						<span style={{ fontWeight: 600 }}>Assistant</span>
+						<button
+							onClick={handleClose}
+							style={{
+								background: "transparent",
+								border: "none",
+								color: "white",
+								fontSize: 20,
+								cursor: "pointer",
+							}}
+							aria-label="Close Chat"
+						>
+							×
+						</button>
+					</div>
+					<div
+						style={{
+							padding: "16px",
+							flex: 1,
+							overflowY: "auto",
+							minHeight: 120,
+						}}
+					>
+						{history.map((entry, idx) => (
+							<div key={idx} style={{ marginBottom: 12 }}>
+								<div
+									style={{ color: "#4f46e5", fontWeight: 500, marginBottom: 2 }}
+								>
+									Assistant:{" "}
+									<span style={{ color: "#222" }}>{entry.assistant}</span>
+								</div>
+								<div style={{ color: "#222", marginLeft: 8 }}>
+									<b>You:</b> {entry.user}
+								</div>
+							</div>
+						))}
+						<div style={{ color: "#4f46e5", fontWeight: 500, marginBottom: 2 }}>
+							Assistant:{" "}
+							<span style={{ color: "#222" }}>{chatSteps[step].assistant}</span>
+						</div>
+					</div>
+					<div
+						style={{
+							padding: "12px 16px",
+							borderTop: "1px solid #e5e7eb",
+							background: "#f9fafb",
+						}}
+					>
+						{chatSteps[step].options.map((option, i) => (
+							<button
+								key={i}
+								style={{
+									marginRight: 8,
+									marginBottom: 4,
+									background: "#6366f1",
+									color: "white",
+									border: "none",
+									borderRadius: 6,
+									padding: "8px 16px",
+									fontWeight: 500,
+									cursor: "pointer",
+									fontSize: 15,
+								}}
+								onClick={() => handleOption(option)}
+							>
+								{option.label}
+							</button>
+						))}
+					</div>
+				</div>
+			)}
+		</>
+	);
+}
+
+// Export dashboard with floating chat
+export default function DashboardWithAssistantChat() {
+	return (
+		<>
+			<Dashboard />
+			<AssistantButtonChat />
+		</>
+	);
+}

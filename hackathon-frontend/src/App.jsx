@@ -96,7 +96,7 @@ function App() {
 					/>
 				</Routes>
 			</BrowserRouter>
-			{/* Floating Robot Chat Icon */}
+			Floating Robot Chat Icon
 			<div
 				style={{
 					position: "fixed",
@@ -107,59 +107,8 @@ function App() {
 					alignItems: "flex-end",
 				}}
 			>
-				{/* Chat bubble */}
-				<div
-					style={{
-						background: "#fff",
-						color: "#333",
-						borderRadius: "16px",
-						boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-						padding: "10px 16px",
-						marginRight: "12px",
-						fontSize: "15px",
-						fontWeight: 500,
-						marginBottom: "8px",
-						maxWidth: "180px",
-					}}
-				>
-					{chatMessage}
+				
 				</div>
-				{/* Robot icon SVG */}
-				<div
-					style={{
-						background: "#fff",
-						borderRadius: "50%",
-						boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-						width: "56px",
-						height: "56px",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-					}}
-				>
-					<svg
-						width="36"
-						height="36"
-						viewBox="0 0 36 36"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<circle
-							cx="18"
-							cy="18"
-							r="16"
-							fill="#F3F4F6"
-							stroke="#B3B3B3"
-							strokeWidth="2"
-						/>
-						<rect x="10" y="14" width="16" height="10" rx="5" fill="#B3B3B3" />
-						<circle cx="14" cy="19" r="2" fill="#fff" />
-						<circle cx="22" cy="19" r="2" fill="#fff" />
-						<rect x="16" y="24" width="4" height="2" rx="1" fill="#B3B3B3" />
-						<rect x="17" y="8" width="2" height="6" rx="1" fill="#B3B3B3" />
-					</svg>
-				</div>
-			</div>
 		</>
 	);
 }

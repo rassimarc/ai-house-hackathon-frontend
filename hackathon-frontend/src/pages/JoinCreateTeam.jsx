@@ -3,10 +3,17 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "./Dashboard.css";
 
-function JoinCreateTeam({ user, setUser, setHouse, fetchData }) {
+function JoinCreateTeam(props) {
+	// Try to get user from props, fallback to localStorage
+	const [user, setUser] = useState(
+		() => props.user || JSON.parse(localStorage.getItem("user"))
+	);
+	const setHouse = props.setHouse;
+	const fetchData = props.fetchData;
 	const [newHouseName, setNewHouseName] = useState("");
 	const [numTenants, setNumTenants] = useState("");
 	const [selectedItems, setSelectedItems] = useState([]);
+	const [pantryAmounts, setPantryAmounts] = useState({}); // {item: amount}
 	const [creatingHouse, setCreatingHouse] = useState(false);
 	const [houseMode, setHouseMode] = useState("create"); // 'create' or 'join'
 	const [joinCode, setJoinCode] = useState("");
@@ -14,16 +21,27 @@ function JoinCreateTeam({ user, setUser, setHouse, fetchData }) {
 	const [joinError, setJoinError] = useState("");
 	const navigate = useNavigate();
 
+	// If user is still null, redirect to login
+	if (!user) {
+		navigate("/login");
+		return null;
+	}
+
 	// Create a house using the backend API
 	const createHouse = async (e) => {
 		e.preventDefault();
 		if (!newHouseName.trim() || !numTenants) return;
 		setCreatingHouse(true);
 		try {
+			alert(user);
 			const response = await api.post("/household/preferences", {
 				name: newHouseName,
 				members: Number(numTenants),
 				common_items: selectedItems,
+				pantry_amounts: selectedItems.reduce((acc, item) => {
+					acc[item] = pantryAmounts[item] || "";
+					return acc;
+				}, {}),
 				users: [user?.email],
 			});
 			const newHouse = response.data;
@@ -34,6 +52,7 @@ function JoinCreateTeam({ user, setUser, setHouse, fetchData }) {
 			setNewHouseName("");
 			setNumTenants("");
 			setSelectedItems([]);
+			setPantryAmounts({});
 			setCreatingHouse(false);
 			fetchData();
 			navigate("/dashboard");
@@ -52,7 +71,7 @@ function JoinCreateTeam({ user, setUser, setHouse, fetchData }) {
 		}
 		setJoiningHouse(true);
 		try {
-            alert(user)
+			alert(user);
 			const response = await api.post(
 				`/household/join?code=${encodeURIComponent(
 					joinCode.trim()
@@ -135,24 +154,52 @@ function JoinCreateTeam({ user, setUser, setHouse, fetchData }) {
 											"Hand wash",
 											"Toothpaste",
 										].map((item) => (
-											<label key={item} className="checkbox-label">
-												<input
-													type="checkbox"
-													name="householdItems"
-													value={item}
-													checked={selectedItems.includes(item)}
-													onChange={(e) => {
-														if (e.target.checked) {
-															setSelectedItems([...selectedItems, item]);
-														} else {
-															setSelectedItems(
-																selectedItems.filter((i) => i !== item)
-															);
+											<div
+												key={item}
+												style={{
+													display: "flex",
+													alignItems: "center",
+													marginBottom: 6,
+												}}
+											>
+												<label
+													className="checkbox-label"
+													style={{ marginRight: 8, marginBottom: 0 }}
+												>
+													<input
+														type="checkbox"
+														name="householdItems"
+														value={item}
+														checked={selectedItems.includes(item)}
+														onChange={(e) => {
+															if (e.target.checked) {
+																setSelectedItems([...selectedItems, item]);
+															} else {
+																setSelectedItems(
+																	selectedItems.filter((i) => i !== item)
+																);
+															}
+														}}
+													/>
+													{item}
+												</label>
+												{selectedItems.includes(item) && (
+													<input
+														type="number"
+														min="0"
+														step="1"
+														placeholder="Pantry amount"
+														style={{ width: 110, marginLeft: 4 }}
+														value={pantryAmounts[item] || ""}
+														onChange={(e) =>
+															setPantryAmounts({
+																...pantryAmounts,
+																[item]: e.target.value,
+															})
 														}
-													}}
-												/>
-												{item}
-											</label>
+													/>
+												)}
+											</div>
 										))}
 									</div>
 									<button

@@ -7,19 +7,31 @@ function AgenticSidebar() {
 	]);
 	const [input, setInput] = useState("");
 
-	const handleSend = (e) => {
-		e.preventDefault();
-		if (!input.trim()) return;
-		setMessages([...messages, { sender: "user", text: input }]);
-		// Simulate agentic response
-		setTimeout(() => {
-			setMessages((msgs) => [
-				...msgs,
-				{ sender: "agent", text: "(Agentic response placeholder)" },
-			]);
-		}, 600);
-		setInput("");
-	};
+    const handleSend = async (e) => {
+        e.preventDefault();
+        if (!input.trim()) return;
+        const userMessage = { sender: "user", text: input };
+        setMessages([...messages, userMessage]);
+        setInput("");
+        try {
+            const response = await fetch("http://localhost:8000/house-agent/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: input }),
+            });
+            const data = await response.json();
+            setMessages((msgs) => [
+                ...msgs,
+                { sender: "agent", text: data.response || "(No response)" },
+            ]);
+        } catch (error) {
+            setMessages((msgs) => [
+                ...msgs,
+                { sender: "agent", text: "(Error getting response)" },
+            ]);
+            console.error(error);
+        }
+    };
 
 	return (
 		<aside className="agentic-sidebar">
