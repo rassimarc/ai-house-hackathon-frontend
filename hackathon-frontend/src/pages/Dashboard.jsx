@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "./Dashboard.css";
+import AgenticSidebar from "../components/AgenticSidebar";
 
 function Dashboard() {
 	const [user, setUser] = useState(null);
@@ -171,7 +172,7 @@ function Dashboard() {
 			{/* Header */}
 			<header className="dashboard-header">
 				<div className="header-content">
-					<h1 className="dashboard-logo">RoomMate</h1>
+					<h1 className="dashboard-logo">CoHive</h1>
 					<div className="header-right">
 						<span className="user-name">Welcome, {user?.name}!</span>
 						<button onClick={() => navigate("/house")} className="my-house-btn">
@@ -322,6 +323,8 @@ function Dashboard() {
 					)}
 				</div>
 			</main>
+			{/* Agentic Sidebar */}
+			<AgenticSidebar />
 		</div>
 	);
 }

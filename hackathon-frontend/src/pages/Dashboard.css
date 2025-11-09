@@ -1,3 +1,108 @@
+/* Agentic Sidebar */
+.agentic-sidebar {
+	position: fixed;
+	top: 90px;
+	right: 0;
+	width: 340px;
+	height: calc(100vh - 90px);
+	background: linear-gradient(135deg, #fffde7 0%, #ffe082 100%);
+	border-left: 2px solid #ffb300;
+	box-shadow: -4px 0 16px rgba(255, 193, 7, 0.1);
+	display: flex;
+	flex-direction: column;
+	z-index: 200;
+}
+
+.agentic-header {
+	padding: 18px 24px;
+	font-size: 22px;
+	font-weight: bold;
+	color: #ffb300;
+	background: #fff8e1;
+	border-bottom: 1.5px solid #ffe082;
+	letter-spacing: 1px;
+	text-align: left;
+}
+
+.agentic-messages {
+	flex: 1;
+	overflow-y: auto;
+	padding: 18px 18px 0 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.agentic-message {
+	padding: 10px 16px;
+	border-radius: 12px;
+	max-width: 85%;
+	font-size: 15px;
+	word-break: break-word;
+	box-shadow: 0 2px 8px rgba(255, 193, 7, 0.07);
+}
+.agentic-message.agent {
+	background: #fffde7;
+	color: #b8860b;
+	align-self: flex-start;
+}
+.agentic-message.user {
+	background: #ffecb3;
+	color: #6d4c00;
+	align-self: flex-end;
+}
+
+.agentic-input-row {
+	display: flex;
+	padding: 16px 18px;
+	border-top: 1.5px solid #ffe082;
+	background: #fff8e1;
+	gap: 8px;
+}
+.agentic-input {
+	flex: 1;
+	padding: 10px 14px;
+	border-radius: 8px;
+	border: 1.5px solid #ffe082;
+	font-size: 15px;
+	background: #fffde7;
+	color: #6d4c00;
+	outline: none;
+	transition: border-color 0.2s;
+}
+.agentic-input:focus {
+	border-color: #ffb300;
+}
+.agentic-send-btn {
+	background: linear-gradient(90deg, #ffb300 0%, #ffd54f 100%);
+	color: #6d4c00;
+	border: none;
+	border-radius: 8px;
+	font-size: 15px;
+	font-weight: 600;
+	padding: 10px 18px;
+	cursor: pointer;
+	box-shadow: 0 2px 8px rgba(255, 179, 0, 0.1);
+	transition: background 0.2s, color 0.2s;
+}
+.agentic-send-btn:hover {
+	background: #ffd54f;
+	color: #ffb300;
+}
+
+@media (max-width: 1100px) {
+	.agentic-sidebar {
+		width: 100vw;
+		left: 0;
+		right: 0;
+		top: unset;
+		bottom: 0;
+		height: 340px;
+		border-left: none;
+		border-top: 2px solid #ffb300;
+		box-shadow: 0 -4px 16px rgba(255, 193, 7, 0.1);
+	}
+}
 /* Create House Form Styles */
 .create-house-form {
 	display: flex;
@@ -21,41 +126,47 @@
 }
 
 .create-house-form .add-item-input:focus {
-	outline: 2px solid #4f46e5;
-	border-color: #4f46e5;
+	outline: 2px solid #ff9800;
+	border-color: #ff9800;
 }
 
 .add-item-btn {
-	background: #4f46e5;
-	color: #fff;
+	background: linear-gradient(90deg, #ffb300 0%, #ffd54f 100%);
+	color: #6d4c00;
 	border: none;
 	border-radius: 6px;
 	padding: 0.7rem 1.2rem;
 	font-size: 1rem;
 	font-weight: 600;
 	cursor: pointer;
-	transition: background 0.2s;
+	box-shadow: 0 2px 8px rgba(255, 179, 0, 0.12);
+	transition: background 0.2s, color 0.2s;
 }
 
 .add-item-btn:disabled {
-	background: #a5b4fc;
+	background: #ffe082;
+	color: #bdb76b;
 	cursor: not-allowed;
 }
 
 /* Checklist Styles */
+
 .household-items-checklist {
-	background: #f3f4f6;
+	background: linear-gradient(135deg, #fffde7 0%, #fff8e1 100%);
 	border-radius: 8px;
 	padding: 1rem;
 	margin-bottom: 1rem;
+	border: 1.5px solid #ffe082;
+	box-shadow: 0 2px 8px rgba(255, 193, 7, 0.07);
 }
 
 .household-items-checklist h3 {
 	margin-top: 0;
 	margin-bottom: 0.7rem;
 	font-size: 1.1rem;
-	color: #4f46e5;
-	font-weight: 600;
+	color: #ffb300;
+	font-weight: 700;
+	letter-spacing: 1px;
 }
 
 .checkbox-label {
@@ -68,9 +179,10 @@
 }
 
 .checkbox-label input[type="checkbox"] {
-	accent-color: #4f46e5;
+	accent-color: #ffb300;
 	width: 1.1em;
 	height: 1.1em;
+	border-radius: 4px;
 }
 
 /* House Name and Tenants Input */
@@ -79,15 +191,17 @@
 	width: 100%;
 	box-sizing: border-box;
 }
+
 .dashboard-container {
 	min-height: 100vh;
-	background-color: #f5f7fa;
+	background: white;
 }
 
 /* Header */
+
 .dashboard-header {
-	background-color: white;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	background: linear-gradient(90deg, #fff8e1 0%, #ffe082 100%);
+	box-shadow: 0 2px 8px rgba(255, 193, 7, 0.08);
 	padding: 20px 0;
 }
 
@@ -103,8 +217,10 @@
 .dashboard-logo {
 	font-size: 28px;
 	font-weight: bold;
-	color: #007bff;
+	color: #ffb300;
 	margin: 0;
+	letter-spacing: 2px;
+	text-shadow: 0 2px 8px #ffe082;
 }
 
 .header-right {
@@ -161,20 +277,20 @@
 	font-size: 18px;
 	font-weight: 500;
 	cursor: pointer;
-	color: #666;
+	color: #b8860b;
 	transition: all 0.2s;
 	border-bottom: 3px solid transparent;
 }
 
 .tab:hover {
-	background-color: #f8f9fa;
-	color: #333;
+	background-color: #fffde7;
+	color: #ffb300;
 }
 
 .tab.active {
-	color: #007bff;
-	border-bottom-color: #007bff;
-	background-color: #f8f9fa;
+	color: #ffb300;
+	border-bottom-color: #ffb300;
+	background-color: #fffde7;
 }
 
 /* Tab Content */
@@ -193,6 +309,7 @@
 }
 
 /* Add Item Form */
+
 .add-item-form {
 	display: flex;
 	gap: 10px;
@@ -202,15 +319,17 @@
 .add-item-input {
 	flex: 1;
 	padding: 12px 16px;
-	border: 2px solid #e9ecef;
+	border: 2px solid #ffe082;
 	border-radius: 8px;
 	font-size: 16px;
+	background: #fffde7;
 	transition: border-color 0.2s;
 }
 
 .add-item-input:focus {
 	outline: none;
-	border-color: #007bff;
+	border-color: #ffb300;
+	background: #fff8e1;
 }
 
 .add-item-btn {
@@ -248,14 +367,15 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 16px 20px;
-	background-color: #f8f9fa;
+	background: linear-gradient(90deg, #fffde7 0%, #ffe082 100%);
 	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(255, 193, 7, 0.08);
 	transition: all 0.2s;
 }
 
 .item-card:hover {
-	background-color: #e9ecef;
-	transform: translateX(5px);
+	background-color: #ffe082;
+	transform: translateX(5px) scale(1.01);
 }
 
 .item-left {
@@ -279,27 +399,28 @@
 
 .item-text.completed {
 	text-decoration: line-through;
-	color: #999;
+	color: #bdb76b;
 }
 
 .delete-btn {
 	padding: 6px 12px;
 	background-color: transparent;
-	color: #dc3545;
+	color: #ff9800;
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
 	font-size: 20px;
 	transition: all 0.2s;
-	opacity: 0.6;
+	opacity: 0.7;
 }
 
 .delete-btn:hover {
 	opacity: 1;
-	background-color: #fee;
+	background-color: #fff3e0;
 }
 
 /* Create / Join House Card */
+
 .create-house-card {
 	padding: 32px;
 	display: flex;
@@ -308,30 +429,31 @@
 	align-items: stretch;
 	max-width: 640px;
 	margin: 40px auto;
-	background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-	border: 1px solid #eef3f8;
+	background: linear-gradient(180deg, #fffde7 0%, #ffe082 100%);
+	border: 1.5px solid #ffecb3;
 	border-radius: 12px;
-	box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+	box-shadow: 0 6px 18px rgba(255, 193, 7, 0.08);
 }
 
 .create-house-card h2 {
 	margin: 0;
 	font-size: 22px;
-	color: #0b3b66;
+	color: #ffb300;
 }
 
 .create-house-card p {
 	margin: 0;
-	color: #586777;
+	color: #b8860b;
 }
 
 .mode-switch {
 	display: flex;
 	gap: 8px;
-	background: #f6f9fc;
+	background: #fff8e1;
 	padding: 6px;
 	border-radius: 999px;
 	width: fit-content;
+	box-shadow: 0 2px 8px rgba(255, 193, 7, 0.07);
 }
 
 .mode-switch button {
@@ -340,14 +462,15 @@
 	padding: 8px 14px;
 	border-radius: 999px;
 	cursor: pointer;
-	color: #3a536b;
+	color: #b8860b;
 	font-weight: 600;
+	transition: background 0.2s, color 0.2s;
 }
 
 .mode-switch button.active {
-	background: #007bff;
+	background: #ffb300;
 	color: white;
-	box-shadow: 0 4px 10px rgba(0, 123, 255, 0.12);
+	box-shadow: 0 4px 10px rgba(255, 179, 0, 0.12);
 }
 
 .create-house-form {
@@ -363,10 +486,10 @@
 
 .error-message {
 	margin-top: 6px;
-	color: #c92a2a;
-	background: #fff5f5;
+	color: #b8860b;
+	background: #fffde7;
 	padding: 8px 10px;
-	border: 1px solid #ffd7d7;
+	border: 1px solid #ffe082;
 	border-radius: 8px;
 	font-size: 14px;
 }
@@ -398,28 +521,34 @@
 }
 
 /* Header My House button */
+
 .my-house-btn {
 	padding: 8px 14px;
-	background-color: #17a2b8;
-	color: white;
+	background: linear-gradient(90deg, #ffb300 0%, #ffd54f 100%);
+	color: #6d4c00;
 	border: none;
 	border-radius: 6px;
 	cursor: pointer;
 	font-size: 14px;
+	font-weight: 600;
+	box-shadow: 0 2px 8px rgba(255, 179, 0, 0.1);
+	transition: background 0.2s, color 0.2s;
 }
 
 .my-house-btn:hover {
-	background-color: #128293;
+	background: #ffd54f;
+	color: #ffb300;
 }
 
 /* Loading */
+
 .loading {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	min-height: 100vh;
 	font-size: 20px;
-	color: #666;
+	color: #ffb300;
 }
 
 /* Responsive Design */
@@ -440,12 +569,12 @@
 	}
 
 	.tab {
-		border-bottom: 1px solid #e9ecef;
+		border-bottom: 1px solid #ffe082;
 		border-right: none;
 	}
 
 	.tab.active {
-		border-bottom-color: #007bff;
+		border-bottom-color: #ffb300;
 		border-right-color: transparent;
 	}
 

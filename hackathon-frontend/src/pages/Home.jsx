@@ -9,7 +9,7 @@ function Home() {
       {/* Navigation Bar */}
       <nav className="navbar">
         <div className="nav-content">
-          <h1 className="logo">RoomMate</h1>
+          <h1 className="logo">CoHive</h1>
           <div className="nav-buttons">
             <button onClick={() => navigate('/login')} className="nav-btn login-btn">
               Login
@@ -36,7 +36,7 @@ function Home() {
 
       {/* Features Section */}
       <section className="features">
-        <h2 className="section-title">Why RoomMate?</h2>
+        <h2 className="section-title">Why CoHive?</h2>
         <div className="features-grid">
           <div className="feature-card">
             <div className="feature-icon">🛒</div>
@@ -107,7 +107,7 @@ function Home() {
 
       {/* Footer */}
       <footer className="footer">
-        <p>&copy; 2025 RoomMate. Making shared living easier.</p>
+        <p>&copy; 2025 CoHive. Making shared living easier.</p>
       </footer>
     </div>
   );
