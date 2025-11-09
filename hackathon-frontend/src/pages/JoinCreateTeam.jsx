@@ -71,7 +71,7 @@ function JoinCreateTeam(props) {
 		}
 		setJoiningHouse(true);
 		try {
-			alert(user);
+
 			const response = await api.post(
 				`/household/join?code=${encodeURIComponent(
 					joinCode.trim()
